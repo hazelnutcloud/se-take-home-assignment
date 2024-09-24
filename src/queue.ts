@@ -11,12 +11,11 @@ export class Queue<Item> implements Iterable<Item> {
     }
   }
 
-  push(item: Item) {
+  push(item: Item, priority = false) {
+    if (priority) {
+      return this.#items.unshift(item);
+    }
     return this.#items.push(item);
-  }
-
-  priorityQueue(item: Item) {
-    return this.#items.unshift(item);
   }
 
   dequeue() {

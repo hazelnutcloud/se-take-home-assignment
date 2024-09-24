@@ -48,7 +48,7 @@ export class Kitchen extends EventEmitter<{ update: [] }> {
 
     const orderInProcess = newestBot.destroy();
     if (orderInProcess) {
-      this.#addOrder(orderInProcess);
+      this.#addOrder(orderInProcess, true);
     }
 
     this.emit("update");
@@ -80,11 +80,11 @@ export class Kitchen extends EventEmitter<{ update: [] }> {
     return this.#completedOrders;
   }
 
-  #addOrder(order: Order) {
+  #addOrder(order: Order, priority = false) {
     if (order.isVip) {
-      this.#vipOrders.push(order);
+      this.#vipOrders.push(order, priority);
     } else {
-      this.#normalOrders.push(order);
+      this.#normalOrders.push(order, priority);
     }
 
     for (const bot of this.#cookingBots) {

@@ -25,7 +25,7 @@ export class Renderer {
       }
     }
 
-    console.log("\x1b[2J\x1b[H");
+    process.stdout.write("\x1b[2J\x1b[H");
 
     if (pendingOrders.length > 0) {
       console.table(pendingOrders);
@@ -48,6 +48,7 @@ v: add new VIP order
     if (this.#errorMessage) {
       console.error(this.#errorMessage);
     }
+    process.stdout.write("> ");
   }
 
   displayError(errorMessage: string) {
