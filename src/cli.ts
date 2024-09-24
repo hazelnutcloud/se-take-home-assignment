@@ -1,12 +1,10 @@
 import { createInterface } from "node:readline";
 import { Kitchen } from "./kitchen";
-import { Renderer } from "./view";
+import { Renderer } from "./renderer";
 
 // Run "bun start to run the CLI, and bun test to run the tests"
 
 const kitchen = new Kitchen();
-const renderer = new Renderer(kitchen);
-renderer.render();
 
 const rl = createInterface({
   input: process.stdin,
@@ -14,6 +12,9 @@ const rl = createInterface({
   terminal: true,
 });
 rl.on("line", (input) => handleInput(kitchen, input));
+
+const renderer = new Renderer({ kitchen, rl });
+renderer.render();
 
 export function handleInput(kitchen: Kitchen, rawInput: string) {
   const input = rawInput.toLowerCase();

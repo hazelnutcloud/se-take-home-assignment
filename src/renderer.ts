@@ -1,13 +1,16 @@
 import type { Kitchen } from "./kitchen";
+import { type Interface, cursorTo, clearScreenDown } from "node:readline";
 
 export class Renderer {
   #kitchen: Kitchen;
+  #rl: Interface;
   #errorMessage?: string;
 
-  constructor(kitchen: Kitchen) {
-    this.#kitchen = kitchen;
+  constructor(params: { kitchen: Kitchen; rl: Interface }) {
+    this.#kitchen = params.kitchen;
+    this.#rl = params.rl;
 
-    kitchen.on("update", this.render.bind(this));
+    params.kitchen.on("update", this.render.bind(this));
   }
 
   render() {
@@ -25,7 +28,9 @@ export class Renderer {
       }
     }
 
-    process.stdout.write("\x1b[2J\x1b[H");
+    const line = this.#rl.line;
+    const cursor = this.#rl.getCursorPos().cols;
+    console.clear();
 
     if (pendingOrders.length > 0) {
       console.table(pendingOrders);
@@ -49,6 +54,8 @@ v: add new VIP order
       console.error(this.#errorMessage);
     }
     process.stdout.write("> ");
+    process.stdout.write(line);
+    cursorTo(process.stdout, cursor);
   }
 
   displayError(errorMessage: string) {
