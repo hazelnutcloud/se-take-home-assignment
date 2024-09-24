@@ -2,6 +2,8 @@ import { createInterface } from "node:readline";
 import { Kitchen } from "./kitchen";
 import { Renderer } from "./view";
 
+// Run "bun start to run the CLI, and bun test to run the tests"
+
 const kitchen = new Kitchen();
 const renderer = new Renderer(kitchen);
 renderer.render();
