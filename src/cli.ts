@@ -23,8 +23,10 @@ export function handleInput(kitchen: Kitchen, rawInput: string) {
     kitchen.addNewOrder({ vip: false });
   } else if (input === "v") {
     kitchen.addNewOrder({ vip: true });
+  } else if (input === "+v") {
+    kitchen.incrBot(true);
   } else if (input === "+") {
-    kitchen.incrBot();
+    kitchen.incrBot(false);
   } else if (input === "-") {
     kitchen.decrBot();
   } else {

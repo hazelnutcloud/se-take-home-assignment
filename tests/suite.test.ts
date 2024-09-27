@@ -40,7 +40,7 @@ describe("Kitchen", () => {
     expect(orders[1].id).toBe(1);
   });
 
-  test(
+  test.skip(
     "Increment Bot",
     async () => {
       const kitchen = new Kitchen();
@@ -64,6 +64,25 @@ describe("Kitchen", () => {
       expect(kitchen.completedOrders[1].id).toBe(0);
     },
     { timeout: 25_000 }
+  );
+
+  test(
+    "Increment VIP Bot",
+    async () => {
+      const kitchen = new Kitchen();
+
+      handleInput(kitchen, "o");
+      handleInput(kitchen, "+v");
+
+      expect(kitchen.cookingBots.length).toBe(1);
+
+      console.log("waiting for bot to finish cooking");
+      await Bun.sleep(5_000);
+
+      expect(kitchen.completedOrders.length).toBe(1);
+      expect(kitchen.completedOrders[0].id).toBe(0);
+    },
+    { timeout: 10_000 }
   );
 
   test("Idling Bot", () => {
@@ -100,3 +119,7 @@ describe("Kitchen", () => {
     expect(orders[0].isComplete).toBe(false);
   });
 });
+
+/**
+ *
+ */

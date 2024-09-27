@@ -11,6 +11,10 @@ export class Stack<Item> implements Iterable<Item> {
     }
   }
 
+  filter(predicate: (item: Item) => boolean) {
+    return this.#items.filter(predicate);
+  }
+
   push(item: Item) {
     return this.#items.push(item);
   }

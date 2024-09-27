@@ -4,6 +4,9 @@ import { Queue } from "./queue";
 import { Stack } from "./stack";
 import { EventEmitter } from "node:events";
 
+export const COOKING_TIME_MS = 10_000;
+export const COOKING_TIME_VIP_MS = 5_000;
+
 export class Kitchen extends EventEmitter<{ update: [] }> {
   #cookingBots: Stack<CookingBot> = new Stack();
   #normalOrders: Queue<Order> = new Queue();
@@ -17,8 +20,9 @@ export class Kitchen extends EventEmitter<{ update: [] }> {
     this.#addOrder(newOrder);
   }
 
-  incrBot() {
+  incrBot(isVip: boolean) {
     const newBot = new CookingBot(
+      isVip,
       (() => {
         const vipOrder = this.#vipOrders.dequeue();
 
@@ -87,11 +91,27 @@ export class Kitchen extends EventEmitter<{ update: [] }> {
       this.#normalOrders.push(order, priority);
     }
 
-    for (const bot of this.#cookingBots) {
+    const vipBots = this.#cookingBots.filter((bot) => bot.isVip);
+    const normalBots = this.#cookingBots.filter((bot) => !bot.isVip);
+
+    let hasTakenOrder = false;
+
+    for (const bot of vipBots) {
       const tookOrder = bot.notifyNewOrder();
 
       if (tookOrder) {
+        hasTakenOrder = true;
         break;
+      }
+    }
+
+    if (!hasTakenOrder) {
+      for (const bot of normalBots) {
+        const tookOrder = bot.notifyNewOrder();
+
+        if (tookOrder) {
+          break;
+        }
       }
     }
 

@@ -1,4 +1,4 @@
-import type { Kitchen } from "./kitchen";
+import { COOKING_TIME_MS, COOKING_TIME_VIP_MS, type Kitchen } from "./kitchen";
 import { type Interface, cursorTo, clearScreenDown } from "node:readline";
 
 export class Renderer {
@@ -11,20 +11,35 @@ export class Renderer {
     this.#rl = params.rl;
 
     params.kitchen.on("update", this.render.bind(this));
+    setInterval(this.render.bind(this), 1000);
   }
 
   render() {
     if (process.env["NODE_ENV"] === "test") {
       return;
     }
-    const pendingOrders: { "Pending Orders": number }[] = [];
+    const pendingOrders: {
+      "Pending Orders": number;
+      "Time remaining": number | undefined;
+    }[] = [];
     const completedOrders: { "Completed Orders": number }[] = [];
 
     for (const order of this.#kitchen.orders()) {
       if (order.isComplete) {
         completedOrders.push({ "Completed Orders": order.id });
       } else {
-        pendingOrders.push({ "Pending Orders": order.id });
+        const cookingDuration = order.isProcessByVip
+          ? COOKING_TIME_VIP_MS
+          : COOKING_TIME_MS;
+        const timeRemaining = order.startProcessTime
+          ? cookingDuration - (Date.now() - order.startProcessTime)
+          : undefined;
+        pendingOrders.push({
+          "Pending Orders": order.id,
+          "Time remaining": timeRemaining
+            ? Math.ceil(timeRemaining / 1000)
+            : timeRemaining,
+        });
       }
     }
 
@@ -48,6 +63,7 @@ Enter a command below and press enter:
 o: add new normal order
 v: add new VIP order
 +: add new cooking bot
++v: add new VIP cooking bot
 -: destroy a cooking bot`);
 
     if (this.#errorMessage) {
